@@ -1,26 +1,41 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <AppHeader @login-modal-change="changeModal(true)" />
+  <div class="w-full flex">
+    <router-view></router-view>
+  </div>
+  <teleport to="body">
+    <AppModal v-if="isOpened" @close-login="changeModal(false)" />
+  </teleport>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import AppHeader from "./components/AppHeader.vue";
+import AppModal from "./components/LoginModal.vue";
+import firebase from "./utilities/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import store from "./store";
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
+  components: { AppHeader, AppModal },
+  computed: {
+    isOpened: function () {
+      return store.state.isModalOpened;
+    },
+  },
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  mounted() {
+    onAuthStateChanged(firebase.auth(), (user) => {
+      if (user) {
+        store.commit("loggedIn", user);
+      } else {
+        store.commit("SignedOut");
+      }
+    });
+  },
+  methods: {
+    changeModal(value) {
+      store.commit("changeModalState", value);
+    },
+  },
+};
+</script>
