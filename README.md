@@ -23,3 +23,5 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 # vue-course
+
+# Here's a live version: <br/> https://vue-course-app.netlify.app/
